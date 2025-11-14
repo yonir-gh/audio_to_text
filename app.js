@@ -5,6 +5,7 @@ const transcriptEl = document.getElementById('transcript');
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
 const saveBtn = document.getElementById('saveBtn');
+const clearBtn = document.getElementById('clearBtn');
 
 if (!SpeechRecognition) {
   alert('このブラウザでは Web Speech API（音声認識）が利用できません。\nChrome または Edge を使用してください。');
@@ -94,5 +95,10 @@ if (!SpeechRecognition) {
 
     statusEl.textContent = `状態: テキストを「${fileName}」として保存しました`;
   });
-}
 
+  clearBtn.addEventListener('click', () => {
+    finalTranscript = '';
+    transcriptEl.value = '';
+    statusEl.textContent = '状態: テキストをクリアしました';
+  });
+}
