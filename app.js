@@ -73,19 +73,63 @@ if (!SpeechRecognition) {
     statusEl.textContent = '状態: 停止要求中…';
   });
 
-  saveBtn.addEventListener('click', () => {
-    const text = transcriptEl.value || '';
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-
+  saveBtn.addEventListener('click', async () => {
     const now = new Date();
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mi = String(now.getMinutes()).padStart(2, '0');
+    const defaultName = `${yyyy}${mm}${dd}_`;
 
-    const fileName = `transcript_${yyyy}${mm}${dd}_${hh}${mi}.txt`;
+    const inputName = window.prompt('保存するファイル名を入力してください（面談者名など）', defaultName);
 
+    if (inputName === null) {
+      statusEl.textContent = '状態: 保存をキャンセルしました';
+      return;
+    }
+
+    let fileName = inputName.trim();
+    if (!fileName) {
+      statusEl.textContent = '状態: ファイル名が空のため保存をキャンセルしました';
+      return;
+    }
+
+    if (!fileName.toLowerCase().endsWith('.txt')) {
+      fileName += '.txt';
+    }
+
+    const text = transcriptEl.value || '';
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+
+    // File System Access API が使える場合: 保存ダイアログで保存先を選択
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [
+            {
+              description: 'Text Files',
+              accept: { 'text/plain': ['.txt'] },
+            },
+          ],
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+
+        statusEl.textContent = `状態: テキストを「${handle.name}」として保存しました`;
+        return;
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          statusEl.textContent = '状態: 保存をキャンセルしました';
+          return;
+        }
+        console.error(err);
+        statusEl.textContent = '状態: 保存中にエラーが発生しました（通常のダウンロードに切り替えます）';
+      }
+    }
+
+    // それ以外のブラウザ: 従来通りダウンロード（保存先はブラウザ依存）
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
