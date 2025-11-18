@@ -63,6 +63,21 @@ if (!SpeechRecognition) {
   startBtn.addEventListener('click', () => {
     if (isRecognizing) return;
     try {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mi = String(now.getMinutes()).padStart(2, '0');
+      const timestampLine = `${yyyy}-${mm}-${dd} ${hh}:${mi} 開始`;
+
+      if (finalTranscript) {
+        finalTranscript += '\n';
+      }
+      finalTranscript += `${timestampLine}\n`;
+      transcriptEl.value = finalTranscript;
+      transcriptEl.scrollTop = transcriptEl.scrollHeight;
+
       recognition.start();
       statusEl.textContent = '状態: 起動中…（マイク許可ダイアログが出る場合があります）';
     } catch (e) {
