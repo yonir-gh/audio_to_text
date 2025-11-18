@@ -49,14 +49,21 @@ if (!SpeechRecognition) {
 
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const result = event.results[i];
+      const text = (result[0].transcript || '').trim();
+
+      if (!text) continue;
+
       if (result.isFinal) {
-        finalTranscript += result[0].transcript;
+        if (finalTranscript) {
+          finalTranscript += '\n';
+        }
+        finalTranscript += text;
       } else {
-        interimTranscript += result[0].transcript;
+        interimTranscript = text;
       }
     }
 
-    transcriptEl.value = finalTranscript + interimTranscript;
+    transcriptEl.value = finalTranscript + (interimTranscript ? '\n' + interimTranscript : '');
     transcriptEl.scrollTop = transcriptEl.scrollHeight;
   };
 
