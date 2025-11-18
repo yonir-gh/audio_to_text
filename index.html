@@ -37,6 +37,44 @@
       font-size: 0.85rem;
       color: #555;
     }
+    .save-dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .save-dialog {
+      background: #fff;
+      padding: 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      max-width: 320px;
+      width: 100%;
+      font-size: 0.95rem;
+    }
+    .save-dialog label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    .save-dialog input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+    .save-dialog-buttons {
+      text-align: right;
+    }
+    .save-dialog-buttons button {
+      margin-left: 8px;
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -55,6 +93,17 @@
 
   <textarea id="transcript" placeholder="ここに文字起こし結果が表示されます。"></textarea>
   <div class="status" id="status">状態: 待機中</div>
+
+  <div id="saveDialogBackdrop" class="save-dialog-backdrop hidden">
+    <div class="save-dialog">
+      <label for="fileNameInput">保存ファイル名</label>
+      <input id="fileNameInput" type="text" />
+      <div class="save-dialog-buttons">
+        <button id="saveDialogCancel">キャンセル</button>
+        <button id="saveDialogOk">保存</button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

@@ -6,6 +6,10 @@ const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
 const saveBtn = document.getElementById('saveBtn');
 const clearBtn = document.getElementById('clearBtn');
+const saveDialogBackdrop = document.getElementById('saveDialogBackdrop');
+const fileNameInput = document.getElementById('fileNameInput');
+const saveDialogOk = document.getElementById('saveDialogOk');
+const saveDialogCancel = document.getElementById('saveDialogCancel');
 
 if (!SpeechRecognition) {
   alert('このブラウザでは Web Speech API（音声認識）が利用できません。\nChrome または Edge を使用してください。');
@@ -73,21 +77,8 @@ if (!SpeechRecognition) {
     statusEl.textContent = '状態: 停止要求中…';
   });
 
-  saveBtn.addEventListener('click', async () => {
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const defaultName = `${yyyy}${mm}${dd}_`;
-
-    const inputName = window.prompt('保存するファイル名を入力してください（面談者名など）', defaultName);
-
-    if (inputName === null) {
-      statusEl.textContent = '状態: 保存をキャンセルしました';
-      return;
-    }
-
-    let fileName = inputName.trim();
+  const saveTextToFile = async (rawName) => {
+    let fileName = rawName.trim();
     if (!fileName) {
       statusEl.textContent = '状態: ファイル名が空のため保存をキャンセルしました';
       return;
@@ -138,7 +129,60 @@ if (!SpeechRecognition) {
     URL.revokeObjectURL(url);
 
     statusEl.textContent = `状態: テキストを「${fileName}」として保存しました`;
+  };
+
+  const openSaveDialog = () => {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const defaultName = `${yyyy}${mm}${dd}_`;
+
+    if (!saveDialogBackdrop || !fileNameInput) {
+      return;
+    }
+
+    saveDialogBackdrop.classList.remove('hidden');
+    fileNameInput.value = defaultName;
+
+    setTimeout(() => {
+      fileNameInput.focus();
+      fileNameInput.setSelectionRange(defaultName.length, defaultName.length);
+    }, 0);
+  };
+
+  saveBtn.addEventListener('click', () => {
+    openSaveDialog();
   });
+
+  if (saveDialogCancel) {
+    saveDialogCancel.addEventListener('click', () => {
+      saveDialogBackdrop.classList.add('hidden');
+      statusEl.textContent = '状態: 保存をキャンセルしました';
+    });
+  }
+
+  if (saveDialogOk) {
+    saveDialogOk.addEventListener('click', async () => {
+      const name = fileNameInput.value;
+      saveDialogBackdrop.classList.add('hidden');
+      await saveTextToFile(name);
+    });
+  }
+
+  if (fileNameInput) {
+    fileNameInput.addEventListener('keydown', async (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        saveDialogBackdrop.classList.add('hidden');
+        await saveTextToFile(fileNameInput.value);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        saveDialogBackdrop.classList.add('hidden');
+        statusEl.textContent = '状態: 保存をキャンセルしました';
+      }
+    });
+  }
 
   clearBtn.addEventListener('click', () => {
     finalTranscript = '';
