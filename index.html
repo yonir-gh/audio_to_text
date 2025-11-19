@@ -2,40 +2,33 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>シンプル文字起こし（Web Speech API）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>シンプル文字起こし</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css">
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 800px;
+      max-width: 960px;
       margin: 24px auto;
-      padding: 0 16px;
-      line-height: 1.6;
-    }
-    h1 {
-      font-size: 1.4rem;
-      margin-bottom: 0.5rem;
+      padding: 0 1rem;
     }
     .buttons {
-      margin: 12px 0;
+      margin: 1rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-    button {
-      margin-right: 8px;
-      padding: 6px 12px;
-      font-size: 0.95rem;
-      cursor: pointer;
+    .buttons button {
+      flex: 1 1 0;
+      min-width: 0;
     }
     textarea {
       width: 100%;
       height: 320px;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 0.95rem;
-      padding: 8px;
-      box-sizing: border-box;
     }
     .status {
       margin-top: 8px;
       font-size: 0.85rem;
-      color: #555;
+      color: var(--muted-color);
     }
     .save-dialog-backdrop {
       position: fixed;
@@ -78,28 +71,36 @@
   </style>
 </head>
 <body>
-  <h1>シンプル文字起こし（Web Speech API 試作）</h1>
-  <p>
-    「開始」を押して許可ダイアログでマイクを許可すると、<br>
-    話した内容が下のテキストエリアに表示されます。
-  </p>
+  <main class="container">
+    <article>
+      <header>
+        <h1>シンプル文字起こし</h1>
+        <p>
+          「開始」を押して許可ダイアログでマイクを許可すると、話した内容が下のテキストエリアに表示されます。
+        </p>
+      </header>
 
-  <div class="buttons">
-    <button id="startBtn">開始</button>
-    <button id="stopBtn">停止</button>
-    <button id="clearBtn">クリア</button>
-    <button id="saveBtn">テキスト保存</button>
-  </div>
+      <section>
+        <div class="buttons">
+          <button id="startBtn" class="contrast">開始</button>
+          <button id="stopBtn" class="secondary">停止</button>
+          <button id="clearBtn" class="secondary">クリア</button>
+          <button id="saveBtn">保存</button>
+        </div>
 
-  <textarea id="transcript" placeholder="ここに文字起こし結果が表示されます。"></textarea>
-  <div class="status" id="status">状態: 待機中</div>
+        <label for="transcript">文字起こし結果</label>
+        <textarea id="transcript" placeholder="ここに文字起こし結果が表示されます。"></textarea>
+        <div class="status" id="status">状態: 待機中</div>
+      </section>
+    </article>
+  </main>
 
   <div id="saveDialogBackdrop" class="save-dialog-backdrop hidden">
     <div class="save-dialog">
       <label for="fileNameInput">保存ファイル名</label>
       <input id="fileNameInput" type="text" />
       <div class="save-dialog-buttons">
-        <button id="saveDialogCancel">キャンセル</button>
+        <button id="saveDialogCancel" class="secondary">キャンセル</button>
         <button id="saveDialogOk">保存</button>
       </div>
     </div>
